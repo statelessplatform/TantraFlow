@@ -1,4 +1,4 @@
-# Agentic Workflow Builder & Orchestrator
+# TantraFlow an Agentic Workflow Builder & Orchestrator
 
 **Version 2.0** · FastAPI + SQLite + Vanilla JS
 
