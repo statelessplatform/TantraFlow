@@ -1,0 +1,17 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Agentic Platform — Python dependencies
+#
+# IMPORTANT: Requires Python 3.10–3.13.
+# Python 3.14+ is NOT yet supported by pydantic-core (needs PyO3 update).
+# Install with:  pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-core==2.27.2
+python-multipart==0.0.20
+aiofiles==24.1.0
+httpx==0.28.1
+anyio==4.8.0
+starlette==0.41.3

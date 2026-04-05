@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TantraFlow — Agentic Workflow Orchestrator</title>
+  <meta name="description" content="TantraFlow — multi-agent workflow orchestration platform. Build, run, and monitor AI pipelines locally." />
+  <link rel="stylesheet" href="/css/main.css" />
+  <!-- IBM Plex (primary + mono) + Fraunces (display headings) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+</head>
+<body>
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-circle-nodes"></i>
+      </div>
+      <div>
+        <div class="brand-text">TantraFlow</div>
+        <span class="brand-tagline">Agentic Orchestrator</span>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-page="dashboard" onclick="navigate('dashboard', this)">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" data-page="workflows" onclick="navigate('workflows', this)">
+        <i class="fa-solid fa-diagram-project"></i>
+        <span>Workflows</span>
+      </a>
+      <a class="nav-item" data-page="builder" onclick="navigate('builder', this)">
+        <i class="fa-solid fa-pen-ruler"></i>
+        <span>Builder</span>
+      </a>
+      <a class="nav-item" data-page="agents" onclick="navigate('agents', this)">
+        <i class="fa-solid fa-robot"></i>
+        <span>Agents</span>
+        <span class="nav-badge" id="agents-badge">0</span>
+      </a>
+      <a class="nav-item" data-page="skills" onclick="navigate('skills', this)">
+        <i class="fa-solid fa-puzzle-piece"></i>
+        <span>Skills &amp; Tools</span>
+      </a>
+      <a class="nav-item" data-page="models" onclick="navigate('models', this)">
+        <i class="fa-solid fa-microchip"></i>
+        <span>Models</span>
+      </a>
+      <a class="nav-item" data-page="chat" onclick="navigate('chat', this)">
+        <i class="fa-solid fa-comments"></i>
+        <span>Chat</span>
+      </a>
+      <a class="nav-item" data-page="logs" onclick="navigate('logs', this)">
+        <i class="fa-solid fa-terminal"></i>
+        <span>Logs</span>
+      </a>
+      <a class="nav-item" data-page="settings" onclick="navigate('settings', this)">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <!-- Help & About -->
+    <div style="padding:8px 10px;border-top:1px solid var(--border-light)">
+      <button onclick="openAbout()"
+              style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;
+                     border-radius:var(--radius);border:none;background:transparent;
+                     cursor:pointer;font-family:var(--font);font-size:13.5px;
+                     color:var(--text-2);transition:background 0.16s;text-align:left">
+        <i class="fa-solid fa-circle-question" style="width:16px;text-align:center;
+           font-size:13px;color:var(--muted)"></i>
+        <span>Help &amp; About</span>
+      </button>
+    </div>
+
+    <!-- LLM status -->
+    <div class="sidebar-status">
+      <div class="status-row">
+        <span class="status-dot" id="llm-status-dot"></span>
+        <span class="status-label" id="llm-status-label">LLM Offline</span>
+      </div>
+      <div class="status-row">
+        <i class="fa-solid fa-database" style="color:var(--muted);font-size:11px"></i>
+        <span class="status-label">SQLite · Local</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main content ──────────────────────────────────────────────────────── -->
+  <main class="main" id="main-content">
+    <div id="page-dashboard" class="page active"></div>
+    <div id="page-workflows" class="page"></div>
+    <div id="page-builder"   class="page"></div>
+    <div id="page-agents"    class="page"></div>
+    <div id="page-skills"    class="page"></div>
+    <div id="page-models"    class="page"></div>
+    <div id="page-chat"      class="page"></div>
+    <div id="page-logs"      class="page"></div>
+    <div id="page-settings"  class="page"></div>
+  </main>
+
+  <!-- ── Modal ────────────────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+    <div class="modal" id="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modal-title">Modal</h3>
+        <button class="btn-icon" onclick="closeModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body"   id="modal-body"></div>
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- ── Toast container ──────────────────────────────────────────────────── -->
+  <div id="toast-container"></div>
+
+  <!-- ── Scripts ──────────────────────────────────────────────────────────── -->
+  <script src="/js/api.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/pages/dashboard.js"></script>
+  <script src="/js/pages/workflows.js"></script>
+  <script src="/js/pages/builder.js"></script>
+  <script src="/js/pages/agents.js"></script>
+  <script src="/js/pages/skills.js"></script>
+  <script src="/js/pages/models.js"></script>
+  <script src="/js/pages/chat.js"></script>
+  <script src="/js/pages/logs.js"></script>
+  <script src="/js/pages/settings.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
